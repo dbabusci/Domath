@@ -17,7 +17,17 @@ pub fn convert_to_int(target: f64) -> isize {
 Check to see if the non-numeric character is valid for math
 */
 pub fn is_valid_operator(input: char) -> bool {
-    let check: String = String::from(")+-/*%(^");
+    let check: String = String::from(")+-/*%.(^");
+    for c in check.chars() {
+        if c == input {return true;}
+    }
+    return false;
+}
+/*
+Check to see if the char is a special operator
+*/
+pub fn is_special_operator(input: char) -> bool {
+    let check: String = String::from(".(-");
     for c in check.chars() {
         if c == input {return true;}
     }
@@ -50,18 +60,40 @@ Assumes valid expression to be tokenized
 3 -> illegal
 */
 
+//maybe one line is bad
+//maybe its rust
 pub fn tokenize(input: String) -> std::vec::Vec<String> {
     let mut ret: std::vec::Vec<String> = Vec::new();
+    let mut check: char = '|';
     for it in input.chars() {
-        if ret.is_empty() {
-            if !it.is_digit(10) && !is_valid_operator(it) {
-                panic!("Invalid input -> {} <- as the first character!", &it);
+        if !ret.is_empty() {
+            if it.is_digit(10) || is_special_operator(it) {
+                //if previous is digit and current is digit -> append digit to the end of last place in ret
+                if check.is_digit(10) || check == '.' { *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string(); }
+                // If previous is a valid operator && current is digit -> make new token
+                else if is_valid_operator(check) { ret.push(it.to_string()); }
+                //panic
+                else { panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); }
             }
+            else if is_valid_operator(it) {
+                //if previous is a digit and the current is a valid operator -> make new token
+                if check.is_digit(10) { ret.push(it.to_string()); }
+                //if previous is ) and the current is a valid operator -> make new token
+                else if check == ')' { ret.push(it.to_string()); }
+                //if the previous is a valid operator and not a special char and the current is a valid operator -> panic
+                else if is_valid_operator(check) && !is_special_operator(check) { panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); }
+                //panic
+                else { panic!("Tokenizer: Not a valid input -> {} <- after -> {} <-", &it, check); }
+            }
+            else{ panic!("Tokenizer: Invalid input -> {} <- in string", &it); }
+        }
+        else {
+            //if the frst entry is not a digit or special operator -> panic
+            if !it.is_digit(10) && !is_special_operator(it) { panic!("Tokenizer: -> {} <- is not a valid first token", &it); }
             ret.push(it.to_string());
         }
-        else{
-            ret.push(it.to_string());
-        }
+        //the new previous is now the current
+        check = it;
     }
     return ret;
 }

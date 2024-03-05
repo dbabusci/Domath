@@ -24,7 +24,7 @@ fn main() {
     println!("{}", test);
     */
     //test_everything();
-    let test: String = String::from("123");
+    let test: String = String::from("(41+18.82)+13.34");
     let check: std::vec::Vec<String> = calc::logic::tokenize(test);
     println!("{:?}", check);
 }

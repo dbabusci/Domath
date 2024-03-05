@@ -170,3 +170,7 @@ pub fn test_combine_strings() {
     assert_eq!(logic::combine_strings(test), s);
     println!("Passed test_combine_strings");
 }
+
+pub fn test_tokenize() {
+    
+}
