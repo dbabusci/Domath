@@ -15,6 +15,7 @@ fn test_everything() {
     calc::tests::test_convert_to_int();
     calc::tests::test_is_valid_operator();
     calc::tests::test_combine_strings();
+    calc::tests::test_tokenize();
 }
 
 fn main() {
@@ -23,8 +24,5 @@ fn main() {
     let test: String = calc::logic::combine_strings(command_line_input);
     println!("{}", test);
     */
-    //test_everything();
-    let test: String = String::from("(41+18.82)+13.34");
-    let check: std::vec::Vec<String> = calc::logic::tokenize(test);
-    println!("{:?}", check);
+    test_everything();
 }

@@ -168,9 +168,20 @@ pub fn test_combine_strings() {
     let test: std::vec::Vec<String> = Vec::from(["1+2".to_string()]);
     let s: String = String::new();
     assert_eq!(logic::combine_strings(test), s);
-    println!("Passed test_combine_strings");
+    println!("Passed test_combine_strings!");
 }
 
 pub fn test_tokenize() {
-    
+    let test: String = String::from("(41--18.82)-13.34");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["(", "41", "--", "18.82", ")", "-", "13.34"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("1+1");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["1", "+", "1"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+    println!("Passed test_tokenize!")
 }

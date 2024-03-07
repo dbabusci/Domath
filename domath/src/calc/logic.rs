@@ -34,6 +34,16 @@ pub fn is_special_operator(input: char) -> bool {
     return false;
 }
 /*
+checks for instances where we can put a negative after
+*/
+pub fn neg_operator_check(input: char) -> bool {
+    let check: String = String::from("+-/*^");
+    for c in check.chars() {
+        if c == input {return true;}
+    }
+    return false; 
+}
+/*
 Take the different arguments, and returns one string
 */
 pub fn combine_strings(arg_list: std::vec::Vec<String>) -> String {
@@ -41,6 +51,18 @@ pub fn combine_strings(arg_list: std::vec::Vec<String>) -> String {
     //Skip over first arg bc it is not relevent
     for i in 1..arg_list.len() {
         ret = ret + &arg_list[i];
+    }
+    return ret;
+}
+
+/*
+Converts from a vector of string literals to a vector of Strings
+C++ would never make me do this, the most strickly typed bullshit I ever used
+*/
+pub fn convert_literals(convert: std::vec::Vec<&str>) -> std::vec::Vec<String> {
+    let mut ret: std::vec::Vec<String> = Vec::new();
+    for it in convert {
+        ret.push((&it).to_string());
     }
     return ret;
 }
@@ -58,6 +80,10 @@ Assumes valid expression to be tokenized
 3+3 -> legal
 3+ -> illegal 
 3 -> illegal
+
+Theory no negative numbers are real
+Cumlative subtraction -- is minus negative number
+--- is minus a negative negative number
 */
 
 //maybe one line is bad
@@ -67,7 +93,7 @@ pub fn tokenize(input: String) -> std::vec::Vec<String> {
     let mut check: char = '|';
     for it in input.chars() {
         if !ret.is_empty() {
-            if it.is_digit(10) || is_special_operator(it) {
+            if it.is_digit(10) || it == '.' {
                 //if previous is digit and current is digit -> append digit to the end of last place in ret
                 if check.is_digit(10) || check == '.' { *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string(); }
                 // If previous is a valid operator && current is digit -> make new token
@@ -80,6 +106,9 @@ pub fn tokenize(input: String) -> std::vec::Vec<String> {
                 if check.is_digit(10) { ret.push(it.to_string()); }
                 //if previous is ) and the current is a valid operator -> make new token
                 else if check == ')' { ret.push(it.to_string()); }
+                //for negative number
+                //Maybe?
+                else if neg_operator_check(check) { *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string(); }
                 //if the previous is a valid operator and not a special char and the current is a valid operator -> panic
                 else if is_valid_operator(check) && !is_special_operator(check) { panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); }
                 //panic
