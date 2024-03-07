@@ -95,23 +95,39 @@ pub fn tokenize(input: String) -> std::vec::Vec<String> {
         if !ret.is_empty() {
             if it.is_digit(10) || it == '.' {
                 //if previous is digit and current is digit -> append digit to the end of last place in ret
-                if check.is_digit(10) || check == '.' { *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string(); }
+                if check.is_digit(10) || check == '.' { 
+                    *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string(); 
+                }
                 // If previous is a valid operator && current is digit -> make new token
-                else if is_valid_operator(check) { ret.push(it.to_string()); }
+                else if is_valid_operator(check) { 
+                    ret.push(it.to_string()); 
+                }
                 //panic
-                else { panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); }
+                else { 
+                    panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); 
+                }
             }
             else if is_valid_operator(it) {
                 //if previous is a digit and the current is a valid operator -> make new token
-                if check.is_digit(10) { ret.push(it.to_string()); }
+                if check.is_digit(10) { 
+                    ret.push(it.to_string()); 
+                }
                 //if previous is ) and the current is a valid operator -> make new token
-                else if check == ')' { ret.push(it.to_string()); }
-                //for negative number
-                //Maybe?
-                else if neg_operator_check(check) { *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string(); }
-                //if the previous is a valid operator and not a special char and the current is a valid operator -> panic
-                else if is_valid_operator(check) && !is_special_operator(check) { panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); }
-                //panic
+                else if check == ')' || check == '('  { 
+                    ret.push(it.to_string()); 
+                }
+                //handles following math operations
+                else if neg_operator_check(check) {
+                    if it == '(' {
+                        ret.push(it.to_string());
+                    }
+                    else if it == '-' {
+                        *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string();
+                    }
+                    else {
+                        panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); 
+                    }
+                }
                 else { panic!("Tokenizer: Not a valid input -> {} <- after -> {} <-", &it, check); }
             }
             else{ panic!("Tokenizer: Invalid input -> {} <- in string", &it); }
@@ -125,6 +141,19 @@ pub fn tokenize(input: String) -> std::vec::Vec<String> {
         check = it;
     }
     return ret;
+}
+
+pub fn parse_tokens(tokens: std::vec::Vec<String>) -> bool { //make it a b-tree?
+
+}
+
+/*
+The Tokenizer does not believe in negative numbers
+For example -11 - -15 becomes - | 11 | -- | 15
+This may cause problems not sure how to evaulate unary minus
+*/
+pub fn evaluate(to_eval: std::vec::Vec<_>) -> bool {//fix return and params
+
 }
 
 pub fn print_token_list(tokens: std::vec::Vec<String>) {
