@@ -174,7 +174,7 @@ pub fn test_combine_strings() {
 pub fn test_tokenize() {
     let test: String = String::from("(41--18.82)-13.34");
     let check_string: std::vec::Vec<String> = logic::tokenize(test);
-    let converted: std::vec::Vec<&str> = Vec::from(["(", "41", "--", "18.82", ")", "-", "13.34"]);
+    let converted: std::vec::Vec<&str> = Vec::from(["(", "41", "-", "-18.82", ")", "-", "13.34"]);
     let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
     assert_eq!(check_string, check_tokens);
 
@@ -186,7 +186,7 @@ pub fn test_tokenize() {
 
     let test: String = String::from("1--1");
     let check_string: std::vec::Vec<String> = logic::tokenize(test);
-    let converted: std::vec::Vec<&str> = Vec::from(["1", "--", "1"]);
+    let converted: std::vec::Vec<&str> = Vec::from(["1", "-", "-1"]);
     let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
     assert_eq!(check_string, check_tokens);
 
@@ -196,9 +196,9 @@ pub fn test_tokenize() {
     let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
     assert_eq!(check_string, check_tokens);
 
-    let test: String = String::from("-32.76+-(54+43.76)^(4.44+-6.3)");
+    let test: String = String::from("-32.76+(54+43.76)^(4.44+-6.3)");
     let check_string: std::vec::Vec<String> = logic::tokenize(test);
-    let converted: std::vec::Vec<&str> = Vec::from(["-", "32.76", "+-", "(", "54", "+", "43.76", ")", "^", "(", "4.44", "+-", "6.3", ")"]);
+    let converted: std::vec::Vec<&str> = Vec::from(["-32.76", "+", "(", "54", "+", "43.76", ")", "^", "(", "4.44", "+", "-6.3", ")"]);
     let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
     assert_eq!(check_string, check_tokens);
 

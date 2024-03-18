@@ -27,7 +27,7 @@ pub fn is_valid_operator(input: char) -> bool {
 Check to see if the char is a special operator
 */
 pub fn is_special_operator(input: char) -> bool {
-    let check: String = String::from(".(-");
+    let check: String = String::from(".(-)");
     for c in check.chars() {
         if c == input {return true;}
     }
@@ -67,6 +67,11 @@ pub fn convert_literals(convert: std::vec::Vec<&str>) -> std::vec::Vec<String> {
     return ret;
 }
 
+pub fn flip_boolean(to_flip: bool) -> bool {
+    if to_flip == true {return false;}
+    return true;
+}
+
 /*
 If the return is empty -> push char on
 
@@ -86,79 +91,90 @@ Cumlative subtraction -- is minus negative number
 --- is minus a negative negative number
 */
 
-//maybe one line is bad
-//maybe its rust
 pub fn tokenize(input: String) -> std::vec::Vec<String> {
     let mut ret: std::vec::Vec<String> = Vec::new();
-    let mut check: char = '|';
-    for it in input.chars() {
-        if !ret.is_empty() {
-            if it.is_digit(10) || it == '.' {
-                //if previous is digit and current is digit -> append digit to the end of last place in ret
-                if check.is_digit(10) || check == '.' { 
-                    *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string(); 
-                }
-                // If previous is a valid operator && current is digit -> make new token
-                else if is_valid_operator(check) { 
-                    ret.push(it.to_string()); 
-                }
-                //panic
-                else { 
-                    panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); 
-                }
+    let mut prev: char = '|';
+    let mut is_negative_number: bool = false;
+    
+    for curr in input.chars() {
+        if ret.is_empty() {
+            if !curr.is_digit(10) && !is_valid_operator(curr) {
+                panic!("Tokenizer: inavlid -> {} <- as first character", curr);
             }
-            else if is_valid_operator(it) {
-                //if previous is a digit and the current is a valid operator -> make new token
-                if check.is_digit(10) { 
-                    ret.push(it.to_string()); 
-                }
-                //if previous is ) and the current is a valid operator -> make new token
-                else if check == ')' || check == '('  { 
-                    ret.push(it.to_string()); 
-                }
-                //handles following math operations
-                else if neg_operator_check(check) {
-                    if it == '(' {
-                        ret.push(it.to_string());
-                    }
-                    else if it == '-' {
-                        *ret.last_mut().unwrap() = ret.last_mut().unwrap().to_owned() + &it.to_string();
-                    }
-                    else {
-                        panic!("Tokenizer: Cannot have -> {} <- after -> {} <-", &it, check); 
-                    }
-                }
-                else { panic!("Tokenizer: Not a valid input -> {} <- after -> {} <-", &it, check); }
+            if(curr == '-') {
+                is_negative_number = true;
             }
-            else{ panic!("Tokenizer: Invalid input -> {} <- in string", &it); }
+            ret.push(curr.to_string());
         }
         else {
-            //if the frst entry is not a digit or special operator -> panic
-            if !it.is_digit(10) && !is_special_operator(it) { panic!("Tokenizer: -> {} <- is not a valid first token", &it); }
-            ret.push(it.to_string());
+            if prev.is_digit(10) || prev == '.' || is_negative_number {
+                if curr.is_digit(10) || curr == '.' {
+                    ret.last_mut().unwrap().push(curr);
+                }
+                else if is_valid_operator(curr) {
+                    ret.push(curr.to_string());
+                    is_negative_number = false;
+                }
+                else {
+                    panic!("Tokenizer: Invalid -> {} <- after -> {} <-", curr, prev);
+                }
+            }
+            else if prev == '-' {
+                if curr == '-' {
+                    ret.push(curr.to_string());
+                    is_negative_number = true;
+                }
+                else if curr.is_digit(10) {
+                    ret.push(curr.to_string());
+                    is_negative_number = true;
+                }
+                else {
+                    panic!("Tokenizer: Invalid -> {} <- after -> {} <-", curr, prev);
+                }
+            }
+            else if is_special_operator(prev) {
+                if curr.is_digit(10) {
+                    ret.push(curr.to_string());
+                    is_negative_number = false;
+                }
+                else if is_valid_operator(prev) {
+                    ret.push(curr.to_string());
+                    is_negative_number = false;
+                }
+            }
+            else if is_valid_operator(prev) {
+                if curr.is_digit(10) {
+                    ret.push(curr.to_string());
+                    is_negative_number = false;
+                }
+                else if curr == '-' {
+                    ret.push(curr.to_string());
+                    is_negative_number = true;
+                }
+                else if is_special_operator(curr) {
+                    ret.push(curr.to_string());
+                    is_negative_number = false;
+                }
+                else {
+                    panic!("Tokenizer: Inavlid -> {} <- after -> {} <-", curr, prev);
+                }
+            }
+            else {
+                panic!("Tokenizer: Not a valid operator -> {} <- after -> {} <-", curr, prev);
+            }
         }
-        //the new previous is now the current
-        check = it;
+        prev = curr;
     }
+
     return ret;
 }
 
-pub fn parse_tokens(tokens: std::vec::Vec<String>) -> bool { //make it a b-tree?
-
-}
+/*
+Maybe convert to postfix form?
+*/
 
 /*
 The Tokenizer does not believe in negative numbers
 For example -11 - -15 becomes - | 11 | -- | 15
 This may cause problems not sure how to evaulate unary minus
-*/
-pub fn evaluate(to_eval: std::vec::Vec<_>) -> bool {//fix return and params
-
-}
-
-pub fn print_token_list(tokens: std::vec::Vec<String>) {
-    print!("{:?}", tokens);
-}
-/*
-Use Binary tree to evaluate expressions
 */
