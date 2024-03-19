@@ -204,3 +204,56 @@ pub fn test_tokenize() {
 
     println!("Passed test_tokenize!")
 }
+
+pub fn test_is_token_digit() {
+    let check: String = String::from("1");
+    assert_eq!(logic::is_token_digit(&check), true);
+    let check: String = String::from("-1");
+    assert_eq!(logic::is_token_digit(&check), true);
+    let check: String = String::from(".98");
+    assert_eq!(logic::is_token_digit(&check), true);
+    let check: String = String::from("-0.372");
+    assert_eq!(logic::is_token_digit(&check), true);
+    let check: String = String::from("-.93");
+    assert_eq!(logic::is_token_digit(&check), true);
+    let check: String = String::from("+");
+    assert_eq!(logic::is_token_digit(&check), false);
+    println!("Passed test_is_token_digit!");
+}
+
+pub fn test_is_token_operator() {
+    let check: String = String::from("+");
+    assert_eq!(logic::is_token_operator(&check), true);
+    let check: String = String::from("-");
+    assert_eq!(logic::is_token_operator(&check), true);
+    let check: String = String::from("(");
+    assert_eq!(logic::is_token_operator(&check), true);
+    let check: String = String::from(")");
+    assert_eq!(logic::is_token_operator(&check), true);
+    let check: String = String::from("*");
+    assert_eq!(logic::is_token_operator(&check), true);
+    let check: String = String::from("/");
+    assert_eq!(logic::is_token_operator(&check), true);
+    let check: String = String::from("12");
+    assert_eq!(logic::is_token_operator(&check), false);
+    let check: String = String::from("-12.5");
+    assert_eq!(logic::is_token_operator(&check), false);
+    let check: String = String::from("-.04");
+    assert_eq!(logic::is_token_operator(&check), false);
+    let check: String = String::from("^");
+    assert_eq!(logic::is_token_operator(&check), true);
+    let check: String = String::from("-1");
+    assert_eq!(logic::is_token_operator(&check), false);
+    println!("Passed test_is_token_operator!");
+}
+
+pub fn test_parser() {
+    let tokens: std::vec::Vec<String> = Vec::from(["1".to_string(), "+".to_string(), "2".to_string()]);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let check_tokens: std::vec::Vec<String> = Vec::from(["1".to_string(), "2".to_string(), "+".to_string()]);
+    assert_eq!(parsed_tokens, check_tokens);
+
+    
+
+    println!("Passed test_parser!");
+}

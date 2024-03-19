@@ -1,4 +1,12 @@
 /*
+Global constants
+*/
+
+//For the parser
+//If it works replace the things inside the valid op checks for tokenizer
+//pub const operator_string: String = String::from("+-/*^)(");
+
+/*
 Determines whether a float could be converted to int without loss
 */
 pub fn is_integer(answer: f64) -> bool {
@@ -73,6 +81,60 @@ pub fn flip_boolean(to_flip: bool) -> bool {
 }
 
 /*
+Initializes a hashmap for the values of all of the operators for parser
+*/
+pub fn init_operator_hash_map() -> std::collections::HashMap<String, usize> {
+    let mut ret: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    ret.insert("^".to_string(), 3);
+    ret.insert("*".to_string(), 2);
+    ret.insert("/".to_string(), 2);
+    ret.insert("+".to_string(), 1);
+    ret.insert("-".to_string(), 1);
+    return ret;
+}
+
+/*
+Checks to see if String token is a number
+Iterates through the string as chars and does an is_digit(10) compare
+*/
+pub fn is_token_digit(token: &String) -> bool {
+    for i in token.chars() {
+        if i.is_digit(10) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+Checks to see if token is an opertor
+*/
+pub fn is_token_operator(token: &String) -> bool {
+    let check: String = String::from("+-/*^)(");
+    if token.len() == 1 {
+        for c in check.chars() {
+            if c == token.chars().nth(0).unwrap() {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+//I miss oop
+//The hashmap that corresponds to the values of the operators
+//pub const operator_precedence: std::collections::HashMap<String, usize> = init_operator_hash_map();
+
+/*---------------------------------------------------------------------------------------------
+|                                                                                             |
+|                                                                                             |
+|                                       Big Three                                             |
+|                                                                                             |
+|                                                                                             |
+---------------------------------------------------------------------------------------------*/
+
+/*
 If the return is empty -> push char on
 
 If the previous char is a digit, and the current one is a digit -> then add to previous entry
@@ -85,10 +147,6 @@ Assumes valid expression to be tokenized
 3+3 -> legal
 3+ -> illegal 
 3 -> illegal
-
-Theory no negative numbers are real
-Cumlative subtraction -- is minus negative number
---- is minus a negative negative number
 */
 
 pub fn tokenize(input: String) -> std::vec::Vec<String> {
@@ -101,7 +159,7 @@ pub fn tokenize(input: String) -> std::vec::Vec<String> {
             if !curr.is_digit(10) && !is_valid_operator(curr) {
                 panic!("Tokenizer: inavlid -> {} <- as first character", curr);
             }
-            if(curr == '-') {
+            if curr == '-' {
                 is_negative_number = true;
             }
             ret.push(curr.to_string());
@@ -170,11 +228,59 @@ pub fn tokenize(input: String) -> std::vec::Vec<String> {
 }
 
 /*
-Maybe convert to postfix form?
+Implementation of Shunting Yard algorithmn
+Converts the token vector into reverse polish notation
+Stacks dont exist for some reason so we use a Vec
+Yeah yeah I know they are built into Vec
 */
+pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
+    let mut ret: std::vec::Vec<String> = Vec::new();
+    let mut operator_stack: std::vec::Vec<String> = Vec::new();
+    //Only run once per program execution so its ok ig
+    let mut operator_value: std::collections::HashMap<String, usize> = init_operator_hash_map();
+    let mut in_parenthesis: bool = false; //maybe unneeded
+
+    for t in tokens {
+        if is_token_digit(&t) {
+            ret.push(t);
+        }
+        else if is_token_operator(&t) {
+            if t == "(".to_string() {
+                operator_stack.push(t);
+                in_parenthesis = true;
+            }
+            else if t == ")".to_string() {
+                while t != "(".to_string() {  //maybe idk
+                    ret.push(operator_stack.pop().expect("Popping stack while token is not lparen"));
+                }
+                operator_stack.pop().expect("Should be popping the lparen into nothing");
+                in_parenthesis = false; 
+            }
+            else {
+                //vomit
+                while !operator_stack.is_empty() && 
+                        operator_value.get(&t) >= operator_value.get(operator_stack.last()
+                            .expect("Comparing the values of the tokens by hashmap")) 
+                {
+                    ret.push(operator_stack.pop().expect("Popping stack if both operators"));
+                }
+                operator_stack.push(t);
+            } 
+        }
+    }
+
+    while !operator_stack.is_empty() {
+        ret.push(operator_stack.pop().expect("Popping stack while stack is not empty"));
+    }
+
+    return ret;
+}
 
 /*
-The Tokenizer does not believe in negative numbers
-For example -11 - -15 becomes - | 11 | -- | 15
-This may cause problems not sure how to evaulate unary minus
+Converts reverse polish notation of tokens into a numerical value
 */
+pub fn evaluator(reverse_polish: std::vec::Vec<String>) -> f64 {
+    let mut ret: f64 = 0.0;
+
+    return ret;
+}

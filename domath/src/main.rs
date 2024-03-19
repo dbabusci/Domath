@@ -1,7 +1,7 @@
 mod calc;
 use calc::calculation;
 use calc::logic;
-use calc::tests;
+//use calc::tests;
 
 fn test_everything() {
     println!("<----------Testing the calculation functions:---------->");
@@ -15,7 +15,11 @@ fn test_everything() {
     calc::tests::test_convert_to_int();
     calc::tests::test_is_valid_operator();
     calc::tests::test_combine_strings();
+    calc::tests::test_is_token_digit();
+    calc::tests::test_is_token_operator();
+    println!("<----------Testing the Tokenizer, Parser and Evaluator:---------->");
     calc::tests::test_tokenize();
+    calc::tests::test_parser();
 }
 
 fn main() {
