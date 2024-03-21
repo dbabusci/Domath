@@ -97,7 +97,7 @@ pub fn init_operator_hash_map() -> std::collections::HashMap<String, usize> {
 Checks to see if String token is a number
 Iterates through the string as chars and does an is_digit(10) compare
 */
-pub fn is_token_digit(token: &String) -> bool {
+pub fn is_token_digit(token: String) -> bool {
     for i in token.chars() {
         if i.is_digit(10) {
             return true;
@@ -109,7 +109,7 @@ pub fn is_token_digit(token: &String) -> bool {
 /*
 Checks to see if token is an opertor
 */
-pub fn is_token_operator(token: &String) -> bool {
+pub fn is_token_operator(token: String) -> bool {
     let check: String = String::from("+-/*^)(");
     if token.len() == 1 {
         for c in check.chars() {
@@ -238,34 +238,27 @@ pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
     let mut operator_stack: std::vec::Vec<String> = Vec::new();
     //Only run once per program execution so its ok ig
     let mut operator_value: std::collections::HashMap<String, usize> = init_operator_hash_map();
-    let mut in_parenthesis: bool = false; //maybe unneeded
 
     for t in tokens {
-        if is_token_digit(&t) {
+        if is_token_digit(t.clone()){ //maybe make borrow
             ret.push(t);
         }
-        else if is_token_operator(&t) {
-            if t == "(".to_string() {
-                operator_stack.push(t);
-                in_parenthesis = true;
+        else if t == "(".to_string() {
+            operator_stack.push(t);
+        }
+        else if t == ")".to_string() {
+            while !operator_stack.is_empty() && operator_stack.last() != Some(&"(".to_string()) { //example uses peek
+                ret.push(operator_stack.pop().expect("Popping to return while in paren"));
             }
-            else if t == ")".to_string() {
-                while t != "(".to_string() {  //maybe idk
-                    ret.push(operator_stack.pop().expect("Popping stack while token is not lparen"));
-                }
-                operator_stack.pop().expect("Should be popping the lparen into nothing");
-                in_parenthesis = false; 
+            let _ = operator_stack.pop();
+        }
+        else {
+            while !operator_stack.is_empty() && 
+                    operator_value[&t] <= operator_value[operator_stack.last().unwrap()]
+            {
+                ret.push(operator_stack.pop().expect("Popping inside the comparison"));
             }
-            else {
-                //vomit
-                while !operator_stack.is_empty() && 
-                        operator_value.get(&t) >= operator_value.get(operator_stack.last()
-                            .expect("Comparing the values of the tokens by hashmap")) 
-                {
-                    ret.push(operator_stack.pop().expect("Popping stack if both operators"));
-                }
-                operator_stack.push(t);
-            } 
+            operator_stack.push(t);
         }
     }
 

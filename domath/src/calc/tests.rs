@@ -1,5 +1,5 @@
-use crate::calculation;
-use crate::logic;
+use crate::calc::calculation;
+use crate::calc::logic;
 
 /*
 Testing the math operations
@@ -139,7 +139,7 @@ pub fn test_convert_to_int() {
     assert_eq!(logic::convert_to_int(0.0), 0);
     assert_eq!(logic::convert_to_int(-2.0), -2);
     assert_eq!(logic::convert_to_int(-2.4), -2);//should never come up but jic
-    println!("Passed test_convert_to_int");
+    println!("Passed test_convert_to_int!");
 }
 
 //testing if we can determine a valid operator
@@ -156,7 +156,7 @@ pub fn test_is_valid_operator() {
     for c in check.chars() {
         assert_eq!(logic::is_valid_operator(c), false);
     }
-    println!("Passed test_is_valid_operator");
+    println!("Passed test_is_valid_operator!");
 }
 
 //testing turning a vector of strings into a string
@@ -207,44 +207,62 @@ pub fn test_tokenize() {
 
 pub fn test_is_token_digit() {
     let check: String = String::from("1");
-    assert_eq!(logic::is_token_digit(&check), true);
+    assert_eq!(logic::is_token_digit(check), true);
     let check: String = String::from("-1");
-    assert_eq!(logic::is_token_digit(&check), true);
+    assert_eq!(logic::is_token_digit(check), true);
     let check: String = String::from(".98");
-    assert_eq!(logic::is_token_digit(&check), true);
+    assert_eq!(logic::is_token_digit(check), true);
     let check: String = String::from("-0.372");
-    assert_eq!(logic::is_token_digit(&check), true);
+    assert_eq!(logic::is_token_digit(check), true);
     let check: String = String::from("-.93");
-    assert_eq!(logic::is_token_digit(&check), true);
+    assert_eq!(logic::is_token_digit(check), true);
     let check: String = String::from("+");
-    assert_eq!(logic::is_token_digit(&check), false);
+    assert_eq!(logic::is_token_digit(check), false);
     println!("Passed test_is_token_digit!");
 }
 
 pub fn test_is_token_operator() {
     let check: String = String::from("+");
-    assert_eq!(logic::is_token_operator(&check), true);
+    assert_eq!(logic::is_token_operator(check), true);
     let check: String = String::from("-");
-    assert_eq!(logic::is_token_operator(&check), true);
+    assert_eq!(logic::is_token_operator(check), true);
     let check: String = String::from("(");
-    assert_eq!(logic::is_token_operator(&check), true);
+    assert_eq!(logic::is_token_operator(check), true);
     let check: String = String::from(")");
-    assert_eq!(logic::is_token_operator(&check), true);
+    assert_eq!(logic::is_token_operator(check), true);
     let check: String = String::from("*");
-    assert_eq!(logic::is_token_operator(&check), true);
+    assert_eq!(logic::is_token_operator(check), true);
     let check: String = String::from("/");
-    assert_eq!(logic::is_token_operator(&check), true);
+    assert_eq!(logic::is_token_operator(check), true);
     let check: String = String::from("12");
-    assert_eq!(logic::is_token_operator(&check), false);
+    assert_eq!(logic::is_token_operator(check), false);
     let check: String = String::from("-12.5");
-    assert_eq!(logic::is_token_operator(&check), false);
+    assert_eq!(logic::is_token_operator(check), false);
     let check: String = String::from("-.04");
-    assert_eq!(logic::is_token_operator(&check), false);
+    assert_eq!(logic::is_token_operator(check), false);
     let check: String = String::from("^");
-    assert_eq!(logic::is_token_operator(&check), true);
+    assert_eq!(logic::is_token_operator(check), true);
     let check: String = String::from("-1");
-    assert_eq!(logic::is_token_operator(&check), false);
+    assert_eq!(logic::is_token_operator(check), false);
     println!("Passed test_is_token_operator!");
+}
+
+pub fn test_operator_value() {
+    let test: std::collections::HashMap<String, usize> = logic::init_operator_hash_map();
+    let operator_value: usize = 1;
+    let operator_token: String = String::from("+");
+    assert_eq!(test[&operator_token], operator_value);
+    let operator_token: String = String::from("-");
+    assert_eq!(test[&operator_token], operator_value);
+    let operator_value: usize = 2;
+    let operator_token: String = String::from("*");
+    assert_eq!(test[&operator_token], operator_value);
+    let operator_token: String = String::from("/");
+    assert_eq!(test[&operator_token], operator_value);
+    let operator_value: usize = 3;
+    let operator_token: String = String::from("^");
+    assert_eq!(test[&operator_token], operator_value);
+    println!("Passed test_operator_value!");
 }
 
 pub fn test_parser() {
@@ -253,7 +271,50 @@ pub fn test_parser() {
     let check_tokens: std::vec::Vec<String> = Vec::from(["1".to_string(), "2".to_string(), "+".to_string()]);
     assert_eq!(parsed_tokens, check_tokens);
 
-    
+    let tokens: std::vec::Vec<String> = Vec::from(["-1".to_string(), "+".to_string(), "-2".to_string()]);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let check_tokens: std::vec::Vec<String> = Vec::from(["-1".to_string(), "-2".to_string(), "+".to_string()]);
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("1+2-3");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["1","2","+","3","-"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("1+2*3");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["1","2","3","*","+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("1+(2*3)");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    //parsed result should be the same
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["1","2","3","*","+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("(1+2)*3");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["1","2","+","3","*"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
 
     println!("Passed test_parser!");
 }
