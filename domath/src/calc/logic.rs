@@ -44,16 +44,6 @@ pub fn is_special_operator(input: char) -> bool {
     return false;
 }
 /*
-checks for instances where we can put a negative after
-*/
-pub fn neg_operator_check(input: char) -> bool {
-    let check: String = String::from("+-/*^");
-    for c in check.chars() {
-        if c == input {return true;}
-    }
-    return false; 
-}
-/*
 Take the different arguments, and returns one string
 */
 pub fn combine_strings(arg_list: std::vec::Vec<String>) -> String {
@@ -74,24 +64,6 @@ pub fn convert_literals(convert: std::vec::Vec<&str>) -> std::vec::Vec<String> {
     for it in convert {
         ret.push((&it).to_string());
     }
-    return ret;
-}
-
-pub fn flip_boolean(to_flip: bool) -> bool {
-    if to_flip == true {return false;}
-    return true;
-}
-
-/*
-Initializes a hashmap for the values of all of the operators for parser
-*/
-pub fn init_operator_hash_map() -> std::collections::HashMap<String, usize> {
-    let mut ret: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
-    ret.insert("^".to_string(), 3);
-    ret.insert("*".to_string(), 2);
-    ret.insert("/".to_string(), 2);
-    ret.insert("+".to_string(), 1);
-    ret.insert("-".to_string(), 1);
     return ret;
 }
 
@@ -292,9 +264,6 @@ Yeah yeah I know they are built into Vec
 pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
     let mut ret: std::vec::Vec<String> = Vec::new();
     let mut operator_stack: std::vec::Vec<String> = Vec::new();
-    //Only run once per program execution so its ok ig
-    let mut operator_value: std::collections::HashMap<String, usize> = init_operator_hash_map();
-
     for t in tokens {
         if is_token_digit(t.clone()){ //maybe make borrow
             ret.push(t);
@@ -309,14 +278,6 @@ pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
             let _ = operator_stack.pop();
         }
         else {
-            /*
-            while !operator_stack.is_empty() && 
-                    operator_value[&t] <= operator_value[operator_stack.last().unwrap()]
-            {
-                ret.push(operator_stack.pop().expect("Popping inside the comparison"));
-            }
-            operator_stack.push(t); 
-            */
             while !operator_stack.is_empty() && 
                     token_value(t.clone()) <= token_value(operator_stack.last().unwrap().to_string()) &&
                     token_associativity(t.clone()) 

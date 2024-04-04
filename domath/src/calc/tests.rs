@@ -89,29 +89,6 @@ pub fn test_multiply() {
     println!("Passed test_multiply!");
 }
 
-//testing positive exponents
-pub fn test_positive_exponent() {
-    assert_eq!(calculation::positive_exponent(0.0, 0), 1.0);
-    assert_eq!(calculation::positive_exponent(-0.5, 0), 1.0);
-    assert_eq!(calculation::positive_exponent(0.5, 0), 1.0);
-    assert_eq!(calculation::positive_exponent(2.0, 0), 1.0);
-    assert_eq!(calculation::positive_exponent(-2.0, 0), 1.0);
-    assert_eq!(calculation::positive_exponent(0.0, 1), 0.0);
-    assert_eq!(calculation::positive_exponent(3.0, 1), 3.0);
-    assert_eq!(calculation::positive_exponent(-3.0, 1), -3.0);
-    assert_eq!(calculation::positive_exponent(-0.5, 1), -0.5);
-    assert_eq!(calculation::positive_exponent(0.5, 1), 0.5);
-    assert_eq!(calculation::positive_exponent(3.0, 3), 27.0);
-    assert_eq!(calculation::positive_exponent(-3.0, 3), -27.0);
-    assert_eq!(calculation::positive_exponent(0.5, 3), 0.125);
-    assert_eq!(calculation::positive_exponent(-0.5, 3), -0.125);
-    assert_eq!(calculation::positive_exponent(3.0, 4), 81.0);
-    assert_eq!(calculation::positive_exponent(-3.0, 4), 81.0);
-    assert_eq!(calculation::positive_exponent(0.5, 4), 0.0625);
-    assert_eq!(calculation::positive_exponent(-0.5, 4), 0.0625);
-    println!("Passed test_positive_exponent!");
-}
-
 /*
 Testing the logic functions
 */
@@ -275,24 +252,6 @@ pub fn test_is_token_operator() {
     let check: String = String::from("-1");
     assert_eq!(logic::is_token_operator(check), false);
     println!("Passed test_is_token_operator!");
-}
-
-pub fn test_operator_value() {
-    let test: std::collections::HashMap<String, usize> = logic::init_operator_hash_map();
-    let operator_value: usize = 1;
-    let operator_token: String = String::from("+");
-    assert_eq!(test[&operator_token], operator_value);
-    let operator_token: String = String::from("-");
-    assert_eq!(test[&operator_token], operator_value);
-    let operator_value: usize = 2;
-    let operator_token: String = String::from("*");
-    assert_eq!(test[&operator_token], operator_value);
-    let operator_token: String = String::from("/");
-    assert_eq!(test[&operator_token], operator_value);
-    let operator_value: usize = 3;
-    let operator_token: String = String::from("^");
-    assert_eq!(test[&operator_token], operator_value);
-    println!("Passed test_operator_value!");
 }
 
 pub fn test_token_associativity() {

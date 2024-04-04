@@ -6,7 +6,6 @@ fn test_everything() {
     calc::tests::test_subtract();
     calc::tests::test_divide();
     calc::tests::test_multiply();
-    calc::tests::test_positive_exponent();
     println!("<----------Testing the logic operation functions:---------->");
     calc::tests::test_is_integer();
     calc::tests::test_convert_to_int();
@@ -14,7 +13,6 @@ fn test_everything() {
     calc::tests::test_combine_strings();
     calc::tests::test_is_token_digit();
     calc::tests::test_is_token_operator();
-    calc::tests::test_operator_value();
     calc::tests::test_token_associativity();
     println!("<----------Testing the Tokenizer, Parser and Evaluator:---------->");
     calc::tests::test_tokenize();
@@ -23,6 +21,7 @@ fn test_everything() {
 }
 
 fn main() {
+    /*
     let command_line_input: std::vec::Vec<String> = std::env::args().collect();
     let expression: String = calc::logic::combine_strings(command_line_input);
     let tokens: std::vec::Vec<String> = calc::logic::tokenize(expression);
@@ -35,5 +34,7 @@ fn main() {
     else {
         println!("{}", result);
     }
-    //test_everything();
+    */
+    //temp add method for handling command
+    test_everything();
 }
