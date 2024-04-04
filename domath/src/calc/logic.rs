@@ -2,6 +2,8 @@
 Global constants
 */
 
+use crate::calc::calculation;
+
 //For the parser
 //If it works replace the things inside the valid op checks for tokenizer
 //pub const operator_string: String = String::from("+-/*^)(");
@@ -152,6 +154,27 @@ pub fn token_associativity(token: String) -> bool {
         return true;
     }
     return false;
+}
+
+pub fn handle_math(token: String, a: f64, b: f64) -> f64 {
+    if token == "+".to_string() {
+        return calculation::add(a, b);
+    }
+    else if token == "-".to_string() {
+        return calculation::subtract(a, b);
+    }
+    else if token == "*".to_string() {
+        return calculation::multiply(a, b);
+    }
+    else if token == "/".to_string() {
+        return calculation::divide(a, b);
+    }
+    else if token == "^".to_string() {
+        return f64::powf(a, b);
+    }
+    else {
+        panic!("Evaluator: Not a valid operator -> {} <- to do math on", token);
+    }
 }
 
 
@@ -315,7 +338,19 @@ pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
 Converts reverse polish notation of tokens into a numerical value
 */
 pub fn evaluator(reverse_polish: std::vec::Vec<String>) -> f64 {
-    let mut ret: f64 = 0.0;
-
-    return ret;
+    let mut stack: std::vec::Vec<f64> = Vec::new(); //will have to convert String -> f64
+    for t in reverse_polish {
+        if !is_token_operator(t.clone()) { //may be trouble since ( and ) eval to true also optimize so no clones
+            let converted_float: f64 = t.parse::<f64>().unwrap();
+            stack.push(converted_float);
+        }
+        else {
+            let first: f64 = *stack.last().unwrap();
+            let _ = stack.pop();
+            let last: f64 = *stack.last().unwrap();
+            let _ = stack.pop();
+            stack.push(handle_math(t, last, first));
+        }
+    }
+    return *stack.last().unwrap();
 }

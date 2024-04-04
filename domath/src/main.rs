@@ -19,13 +19,21 @@ fn test_everything() {
     println!("<----------Testing the Tokenizer, Parser and Evaluator:---------->");
     calc::tests::test_tokenize();
     calc::tests::test_parser();
+    calc::tests::test_evaluator();
 }
 
 fn main() {
-    /*
     let command_line_input: std::vec::Vec<String> = std::env::args().collect();
-    let test: String = calc::logic::combine_strings(command_line_input);
-    println!("{}", test);
-    */
-    test_everything();
+    let expression: String = calc::logic::combine_strings(command_line_input);
+    let tokens: std::vec::Vec<String> = calc::logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = calc::logic::parser(tokens);
+    let result: f64 = calc::logic::evaluator(parsed_tokens);
+    
+    if calc::logic::is_integer(result.clone()) {
+        println!("{}", calc::logic::convert_to_int(result));
+    }
+    else {
+        println!("{}", result);
+    }
+    //test_everything();
 }
