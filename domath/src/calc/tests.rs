@@ -172,6 +172,24 @@ pub fn test_combine_strings() {
 }
 
 pub fn test_tokenize() {
+    let test: String = String::from("1+(2*3)");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["1", "+", "(", "2", "*", "3", ")"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("(1+2)*3");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["(", "1", "+", "2", ")", "*", "3"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("-1+-2*-3");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["-1", "+", "-2", "*", "-3"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
     let test: String = String::from("(41--18.82)-13.34");
     let check_string: std::vec::Vec<String> = logic::tokenize(test);
     let converted: std::vec::Vec<&str> = Vec::from(["(", "41", "-", "-18.82", ")", "-", "13.34"]);
@@ -199,6 +217,12 @@ pub fn test_tokenize() {
     let test: String = String::from("-32.76+(54+43.76)^(4.44+-6.3)");
     let check_string: std::vec::Vec<String> = logic::tokenize(test);
     let converted: std::vec::Vec<&str> = Vec::from(["-32.76", "+", "(", "54", "+", "43.76", ")", "^", "(", "4.44", "+", "-6.3", ")"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("(((((5+5)))))");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["(", "(", "(", "(", "(", "5", "+", "5", ")", ")", ")", ")", ")"]);
     let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
     assert_eq!(check_string, check_tokens);
 
@@ -265,6 +289,18 @@ pub fn test_operator_value() {
     println!("Passed test_operator_value!");
 }
 
+pub fn test_token_associativity() {
+    assert_eq!(true, logic::token_associativity("+".to_string()));
+    assert_eq!(true, logic::token_associativity("-".to_string()));
+    assert_eq!(true, logic::token_associativity("/".to_string()));
+    assert_eq!(true, logic::token_associativity("*".to_string()));
+    assert_eq!(false, logic::token_associativity("^".to_string()));
+    assert_eq!(false, logic::token_associativity("(".to_string()));
+    assert_eq!(false, logic::token_associativity(")".to_string()));
+
+    println!("Passed test_token_associativity");
+}
+
 pub fn test_parser() {
     let tokens: std::vec::Vec<String> = Vec::from(["1".to_string(), "+".to_string(), "2".to_string()]);
     let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
@@ -285,7 +321,7 @@ pub fn test_parser() {
         check_tokens.push(t.to_string());
     }
     assert_eq!(parsed_tokens, check_tokens);
-
+    
     let expression: String = String::from("1+2*3");
     let tokens: std::vec::Vec<String> = logic::tokenize(expression);
     let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
@@ -296,20 +332,60 @@ pub fn test_parser() {
     }
     assert_eq!(parsed_tokens, check_tokens);
 
+    let expression: String = String::from("-1+-2*-3");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["-1","-2","-3","*","+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+    
     let expression: String = String::from("1+(2*3)");
     let tokens: std::vec::Vec<String> = logic::tokenize(expression);
-    //parsed result should be the same
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
     let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["1","2","3","*","+"]);
     let mut check_tokens: std::vec::Vec<String> = Vec::new();
     for t in literal_check_tokens {
         check_tokens.push(t.to_string());
     }
     assert_eq!(parsed_tokens, check_tokens);
-
+    
     let expression: String = String::from("(1+2)*3");
     let tokens: std::vec::Vec<String> = logic::tokenize(expression);
     let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
     let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["1","2","+","3","*"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("5+2/(3-8)^5^2");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["5", "2", "3", "8", "-", "5", "2", "^", "^", "/", "+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("5.22+2.12/(3.32-8.76)^5.2^2.7");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["5.22", "2.12", "3.32", "8.76", "-", "5.2", "2.7", "^", "^", "/", "+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("((((((6+-2))))))");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["6", "-2", "+"]);
     let mut check_tokens: std::vec::Vec<String> = Vec::new();
     for t in literal_check_tokens {
         check_tokens.push(t.to_string());

@@ -122,6 +122,39 @@ pub fn is_token_operator(token: String) -> bool {
     return false;
 }
 
+/*
+Hashmap acting foolish
+Dumb thing but what ever
+*/
+pub fn token_value(token: String) -> usize {
+    if token == "+".to_string() || token == "-".to_string() {
+        return 1;
+    }
+    else if token == "*".to_string() || token == "/".to_string() {
+        return 2;
+    }
+    else if token == "^".to_string() {
+        return 3;
+    }
+    return 0;
+}
+
+/*
+Adding function to determine left associtivty
+Without cannot handle exponents
+*/
+pub fn token_associativity(token: String) -> bool {
+    if token == "+".to_string() ||
+       token == "-".to_string() ||
+       token == "*".to_string() ||
+       token == "/".to_string() 
+    {
+        return true;
+    }
+    return false;
+}
+
+
 //I miss oop
 //The hashmap that corresponds to the values of the operators
 //pub const operator_precedence: std::collections::HashMap<String, usize> = init_operator_hash_map();
@@ -247,15 +280,24 @@ pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
             operator_stack.push(t);
         }
         else if t == ")".to_string() {
-            while !operator_stack.is_empty() && operator_stack.last() != Some(&"(".to_string()) { //example uses peek
+            while !operator_stack.is_empty() && operator_stack.last().unwrap().to_string() != "(".to_string() { //example uses peek
                 ret.push(operator_stack.pop().expect("Popping to return while in paren"));
             }
             let _ = operator_stack.pop();
         }
         else {
+            /*
             while !operator_stack.is_empty() && 
                     operator_value[&t] <= operator_value[operator_stack.last().unwrap()]
             {
+                ret.push(operator_stack.pop().expect("Popping inside the comparison"));
+            }
+            operator_stack.push(t); 
+            */
+            while !operator_stack.is_empty() && 
+                    token_value(t.clone()) <= token_value(operator_stack.last().unwrap().to_string()) &&
+                    token_associativity(t.clone()) 
+                {
                 ret.push(operator_stack.pop().expect("Popping inside the comparison"));
             }
             operator_stack.push(t);

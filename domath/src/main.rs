@@ -15,6 +15,7 @@ fn test_everything() {
     calc::tests::test_is_token_digit();
     calc::tests::test_is_token_operator();
     calc::tests::test_operator_value();
+    calc::tests::test_token_associativity();
     println!("<----------Testing the Tokenizer, Parser and Evaluator:---------->");
     calc::tests::test_tokenize();
     calc::tests::test_parser();
