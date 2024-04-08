@@ -95,17 +95,17 @@ Testing the logic functions
 
 //Testing function to determine whether a float can become an int without loss
 pub fn test_is_integer() {
-    assert_eq!(logic::is_integer(3.0), true);
-    assert_eq!(logic::is_integer(0.0), true);
-    assert_eq!(logic::is_integer(2.0), true);
-    assert_eq!(logic::is_integer(-2.0), true);
-    assert_eq!(logic::is_integer(-3.0), true);
-    assert_eq!(logic::is_integer(3.3), false);
-    assert_eq!(logic::is_integer(2.7), false);
-    assert_eq!(logic::is_integer(0.1), false);
-    assert_eq!(logic::is_integer(-3.3), false);
-    assert_eq!(logic::is_integer(-2.7), false);
-    assert_eq!(logic::is_integer(-0.1), false);
+    assert_eq!(logic::is_integer(&3.0), true);
+    assert_eq!(logic::is_integer(&0.0), true);
+    assert_eq!(logic::is_integer(&2.0), true);
+    assert_eq!(logic::is_integer(&-2.0), true);
+    assert_eq!(logic::is_integer(&-3.0), true);
+    assert_eq!(logic::is_integer(&3.3), false);
+    assert_eq!(logic::is_integer(&2.7), false);
+    assert_eq!(logic::is_integer(&0.1), false);
+    assert_eq!(logic::is_integer(&-3.3), false);
+    assert_eq!(logic::is_integer(&-2.7), false);
+    assert_eq!(logic::is_integer(&-0.1), false);
     println!("Passed test_is_integer!");
 }
 
@@ -214,54 +214,54 @@ pub fn test_tokenize() {
 
 pub fn test_is_token_digit() {
     let check: String = String::from("1");
-    assert_eq!(logic::is_token_digit(check), true);
+    assert_eq!(logic::is_token_digit(&check), true);
     let check: String = String::from("-1");
-    assert_eq!(logic::is_token_digit(check), true);
+    assert_eq!(logic::is_token_digit(&check), true);
     let check: String = String::from(".98");
-    assert_eq!(logic::is_token_digit(check), true);
+    assert_eq!(logic::is_token_digit(&check), true);
     let check: String = String::from("-0.372");
-    assert_eq!(logic::is_token_digit(check), true);
+    assert_eq!(logic::is_token_digit(&check), true);
     let check: String = String::from("-.93");
-    assert_eq!(logic::is_token_digit(check), true);
+    assert_eq!(logic::is_token_digit(&check), true);
     let check: String = String::from("+");
-    assert_eq!(logic::is_token_digit(check), false);
+    assert_eq!(logic::is_token_digit(&check), false);
     println!("Passed test_is_token_digit!");
 }
 
 pub fn test_is_token_operator() {
     let check: String = String::from("+");
-    assert_eq!(logic::is_token_operator(check), true);
+    assert_eq!(logic::is_token_operator(&check), true);
     let check: String = String::from("-");
-    assert_eq!(logic::is_token_operator(check), true);
+    assert_eq!(logic::is_token_operator(&check), true);
     let check: String = String::from("(");
-    assert_eq!(logic::is_token_operator(check), true);
+    assert_eq!(logic::is_token_operator(&check), true);
     let check: String = String::from(")");
-    assert_eq!(logic::is_token_operator(check), true);
+    assert_eq!(logic::is_token_operator(&check), true);
     let check: String = String::from("*");
-    assert_eq!(logic::is_token_operator(check), true);
+    assert_eq!(logic::is_token_operator(&check), true);
     let check: String = String::from("/");
-    assert_eq!(logic::is_token_operator(check), true);
+    assert_eq!(logic::is_token_operator(&check), true);
     let check: String = String::from("12");
-    assert_eq!(logic::is_token_operator(check), false);
+    assert_eq!(logic::is_token_operator(&check), false);
     let check: String = String::from("-12.5");
-    assert_eq!(logic::is_token_operator(check), false);
+    assert_eq!(logic::is_token_operator(&check), false);
     let check: String = String::from("-.04");
-    assert_eq!(logic::is_token_operator(check), false);
+    assert_eq!(logic::is_token_operator(&check), false);
     let check: String = String::from("^");
-    assert_eq!(logic::is_token_operator(check), true);
+    assert_eq!(logic::is_token_operator(&check), true);
     let check: String = String::from("-1");
-    assert_eq!(logic::is_token_operator(check), false);
+    assert_eq!(logic::is_token_operator(&check), false);
     println!("Passed test_is_token_operator!");
 }
 
 pub fn test_token_associativity() {
-    assert_eq!(true, logic::token_associativity("+".to_string()));
-    assert_eq!(true, logic::token_associativity("-".to_string()));
-    assert_eq!(true, logic::token_associativity("/".to_string()));
-    assert_eq!(true, logic::token_associativity("*".to_string()));
-    assert_eq!(false, logic::token_associativity("^".to_string()));
-    assert_eq!(false, logic::token_associativity("(".to_string()));
-    assert_eq!(false, logic::token_associativity(")".to_string()));
+    assert_eq!(true, logic::token_associativity(&"+".to_string()));
+    assert_eq!(true, logic::token_associativity(&"-".to_string()));
+    assert_eq!(true, logic::token_associativity(&"/".to_string()));
+    assert_eq!(true, logic::token_associativity(&"*".to_string()));
+    assert_eq!(false, logic::token_associativity(&"^".to_string()));
+    assert_eq!(false, logic::token_associativity(&"(".to_string()));
+    assert_eq!(false, logic::token_associativity(&")".to_string()));
 
     println!("Passed test_token_associativity");
 }

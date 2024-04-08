@@ -11,7 +11,7 @@ use crate::calc::calculation;
 /*
 Determines whether a float could be converted to int without loss
 */
-pub fn is_integer(answer: f64) -> bool {
+pub fn is_integer(answer: &f64) -> bool {
     if answer.fract() == 0.0 {return true;}
     else {return false;}
 }
@@ -71,7 +71,7 @@ pub fn convert_literals(convert: std::vec::Vec<&str>) -> std::vec::Vec<String> {
 Checks to see if String token is a number
 Iterates through the string as chars and does an is_digit(10) compare
 */
-pub fn is_token_digit(token: String) -> bool {
+pub fn is_token_digit(token: &String) -> bool {
     for i in token.chars() {
         if i.is_digit(10) {
             return true;
@@ -83,7 +83,7 @@ pub fn is_token_digit(token: String) -> bool {
 /*
 Checks to see if token is an opertor
 */
-pub fn is_token_operator(token: String) -> bool {
+pub fn is_token_operator(token: &String) -> bool {
     let check: String = String::from("+-/*^)(");
     if token.len() == 1 {
         for c in check.chars() {
@@ -100,14 +100,14 @@ pub fn is_token_operator(token: String) -> bool {
 Hashmap acting foolish
 Dumb thing but what ever
 */
-pub fn token_value(token: String) -> usize {
-    if token == "+".to_string() || token == "-".to_string() {
+pub fn token_value(token: &String) -> usize {
+    if token == &"+".to_string() || token == &"-".to_string() {
         return 1;
     }
-    else if token == "*".to_string() || token == "/".to_string() {
+    else if token == &"*".to_string() || token == &"/".to_string() {
         return 2;
     }
-    else if token == "^".to_string() {
+    else if token == &"^".to_string() {
         return 3;
     }
     return 0;
@@ -117,11 +117,11 @@ pub fn token_value(token: String) -> usize {
 Adding function to determine left associtivty
 Without cannot handle exponents
 */
-pub fn token_associativity(token: String) -> bool {
-    if token == "+".to_string() ||
-       token == "-".to_string() ||
-       token == "*".to_string() ||
-       token == "/".to_string() 
+pub fn token_associativity(token: &String) -> bool {
+    if token == &"+".to_string() ||
+       token == &"-".to_string() ||
+       token == &"*".to_string() ||
+       token == &"/".to_string() 
     {
         return true;
     }
@@ -265,7 +265,7 @@ pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
     let mut ret: std::vec::Vec<String> = Vec::new();
     let mut operator_stack: std::vec::Vec<String> = Vec::new();
     for t in tokens {
-        if is_token_digit(t.clone()){ //maybe make borrow
+        if is_token_digit(&t){ //maybe make borrow
             ret.push(t);
         }
         else if t == "(".to_string() {
@@ -279,8 +279,8 @@ pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
         }
         else {
             while !operator_stack.is_empty() && 
-                    token_value(t.clone()) <= token_value(operator_stack.last().unwrap().to_string()) &&
-                    token_associativity(t.clone()) 
+                    token_value(&t) <= token_value(&operator_stack.last().unwrap().to_string()) &&
+                    token_associativity(&t) 
                 {
                 ret.push(operator_stack.pop().expect("Popping inside the comparison"));
             }
@@ -301,7 +301,7 @@ Converts reverse polish notation of tokens into a numerical value
 pub fn evaluator(reverse_polish: std::vec::Vec<String>) -> f64 {
     let mut stack: std::vec::Vec<f64> = Vec::new(); //will have to convert String -> f64
     for t in reverse_polish {
-        if !is_token_operator(t.clone()) { //may be trouble since ( and ) eval to true also optimize so no clones
+        if !is_token_operator(&t) { //may be trouble since ( and ) eval to true also optimize so no clones
             let converted_float: f64 = t.parse::<f64>().unwrap();
             stack.push(converted_float);
         }
