@@ -419,5 +419,11 @@ pub fn test_evaluator() {
     let evaluated: f64 = logic::evaluator(parsed_tokens);
     assert_eq!(evaluated, 0.06);
 
+    let expression: String = String::from("(5+3)*-8");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let evaluated: f64 = logic::evaluator(parsed_tokens);
+    assert_eq!(evaluated, -64.0);
+
     println!("Passed test_evaluator!");
 }
