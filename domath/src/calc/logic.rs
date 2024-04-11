@@ -27,7 +27,8 @@ pub fn convert_to_int(target: f64) -> isize {
 Check to see if the non-numeric character is valid for math
 */
 pub fn is_valid_operator(input: char) -> bool {
-    let check: String = String::from(")+-/*%.(^");
+    //p and d serve as alternate to ()
+    let check: String = String::from(")+-/*%.(^pd");
     for c in check.chars() {
         if c == input {return true;}
     }
@@ -37,7 +38,8 @@ pub fn is_valid_operator(input: char) -> bool {
 Check to see if the char is a special operator
 */
 pub fn is_special_operator(input: char) -> bool {
-    let check: String = String::from(".(-)");
+    //p and d serve as alternate to ()
+    let check: String = String::from(".(-)pd");
     for c in check.chars() {
         if c == input {return true;}
     }
@@ -84,7 +86,8 @@ pub fn is_token_digit(token: &String) -> bool {
 Checks to see if token is an opertor
 */
 pub fn is_token_operator(token: &String) -> bool {
-    let check: String = String::from("+-/*^)(");
+    //p and d serve as alternate to ()
+    let check: String = String::from("+-/*^)(pd");
     if token.len() == 1 {
         for c in check.chars() {
             if c == token.chars().nth(0).unwrap() {
@@ -268,11 +271,13 @@ pub fn parser(tokens: std::vec::Vec<String>) -> std::vec::Vec<String> {
         if is_token_digit(&t){ //maybe make borrow
             ret.push(t);
         }
-        else if t == "(".to_string() {
+        else if t == "(".to_string() || t == "p".to_string() {
             operator_stack.push(t);
         }
-        else if t == ")".to_string() {
-            while !operator_stack.is_empty() && operator_stack.last().unwrap().to_string() != "(".to_string() { //example uses peek
+        else if t == ")".to_string() || t == "d".to_string() {
+            while !operator_stack.is_empty() && 
+            (operator_stack.last().unwrap().to_string() != "(".to_string() && operator_stack.last().unwrap().to_string() != "p".to_string()) 
+            { //example uses peek
                 ret.push(operator_stack.pop().expect("Popping to return while in paren"));
             }
             let _ = operator_stack.pop();

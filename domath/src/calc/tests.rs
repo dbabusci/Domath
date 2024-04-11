@@ -129,7 +129,9 @@ pub fn test_is_valid_operator() {
     assert_eq!(logic::is_valid_operator(')'), true);
     assert_eq!(logic::is_valid_operator('^'), true);
     assert_eq!(logic::is_valid_operator('%'), true);
-    let check: String = String::from("abcdefghijklmnopqrstuvwxyz!@#$&");
+    assert_eq!(logic::is_valid_operator('p'), true);
+    assert_eq!(logic::is_valid_operator('d'), true);
+    let check: String = String::from("abcefghijklmnoqrstuvwxyz!@#$&");
     for c in check.chars() {
         assert_eq!(logic::is_valid_operator(c), false);
     }
@@ -206,6 +208,36 @@ pub fn test_tokenize() {
     let test: String = String::from("(((((5+5)))))");
     let check_string: std::vec::Vec<String> = logic::tokenize(test);
     let converted: std::vec::Vec<&str> = Vec::from(["(", "(", "(", "(", "(", "5", "+", "5", ")", ")", ")", ")", ")"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("43.2+p5*23.2d^2-2");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["43.2", "+", "p", "5", "*", "23.2", "d", "^", "2", "-", "2"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("-32.76+p54+43.76d^p4.44+-6.3d");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["-32.76", "+", "p", "54", "+", "43.76", "d", "^", "p", "4.44", "+", "-6.3", "d"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("ppppp5+5ddddd");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["p", "p", "p", "p", "p", "5", "+", "5", "d", "d", "d", "d", "d"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("p41--18.82d-13.34");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["p", "41", "-", "-18.82", "d", "-", "13.34"]);
+    let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
+    assert_eq!(check_string, check_tokens);
+
+    let test: String = String::from("1+p2*3d");
+    let check_string: std::vec::Vec<String> = logic::tokenize(test);
+    let converted: std::vec::Vec<&str> = Vec::from(["1", "+", "p", "2", "*", "3", "d"]);
     let check_tokens: std::vec::Vec<String> = logic::convert_literals(converted);
     assert_eq!(check_string, check_tokens);
 
@@ -367,6 +399,55 @@ pub fn test_parser() {
     }
     assert_eq!(parsed_tokens, check_tokens);
 
+    let expression: String = String::from("5+2/p3-8d^5^2");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["5", "2", "3", "8", "-", "5", "2", "^", "^", "/", "+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("5.22+2.12/p3.32-8.76d^5.2^2.7");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["5.22", "2.12", "3.32", "8.76", "-", "5.2", "2.7", "^", "^", "/", "+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
+    let expression: String = String::from("pppppp6+-2dddddd");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["6", "-2", "+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+
+    let expression: String = String::from("1+p2*3d");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["1","2","3","*","+"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+    
+    let expression: String = String::from("p1+2d*3");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let literal_check_tokens: std::vec::Vec<&str> = Vec::from(["1","2","+","3","*"]);
+    let mut check_tokens: std::vec::Vec<String> = Vec::new();
+    for t in literal_check_tokens {
+        check_tokens.push(t.to_string());
+    }
+    assert_eq!(parsed_tokens, check_tokens);
+
     println!("Passed test_parser!");
 }
 
@@ -420,6 +501,12 @@ pub fn test_evaluator() {
     assert_eq!(evaluated, 0.06);
 
     let expression: String = String::from("(5+3)*-8");
+    let tokens: std::vec::Vec<String> = logic::tokenize(expression);
+    let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
+    let evaluated: f64 = logic::evaluator(parsed_tokens);
+    assert_eq!(evaluated, -64.0);
+
+    let expression: String = String::from("p5+3d*-8");
     let tokens: std::vec::Vec<String> = logic::tokenize(expression);
     let parsed_tokens: std::vec::Vec<String> = logic::parser(tokens);
     let evaluated: f64 = logic::evaluator(parsed_tokens);

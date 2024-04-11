@@ -21,7 +21,6 @@ fn test_everything() {
 }
 
 fn main() {
-    /*
     let command_line_input: std::vec::Vec<String> = std::env::args().collect();
     let expression: String = calc::logic::combine_strings(command_line_input);
     let tokens: std::vec::Vec<String> = calc::logic::tokenize(expression);
@@ -34,7 +33,6 @@ fn main() {
     else {
         println!("{}", result);
     }
-    */
     //temp add method for handling command
-    test_everything();
+    //test_everything();
 }
