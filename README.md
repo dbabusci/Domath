@@ -1,4 +1,4 @@
-The ‘domath’ (pronounced Dometh) is a terminal command, made with rust, used for evaluating simple mathematical expressions.
+The ‘domath’ (pronounced Dom-eth) is a terminal command, made with rust, used for evaluating simple mathematical expressions.
 
 Currently parenthesis are broken for the build due to bash errors. Therefore the operators ‘(’ and ‘)’ are replaced by ‘p’ and ‘d’.
 
